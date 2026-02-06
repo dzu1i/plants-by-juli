@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 type CookieToSet = {
   name: string;
   value: string;
-  options?: Parameters<ReturnType<typeof cookies>["set"]>[2];
+  options?: Parameters<Awaited<ReturnType<typeof cookies>>["set"]>[2];
 };
 
 export async function createSupabaseServerClient() {
