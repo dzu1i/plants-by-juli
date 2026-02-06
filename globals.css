@@ -1,41 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
-@import "tailwindcss";
 
 * {
   box-sizing: border-box;
 }
 
-:root {
-  color-scheme: light;
-  --background: #f7f4ef;
-  --foreground: #1a1a1a;
-  --ink: #1c1c1c;
-  --ink-soft: #4e4a44;
-  --surface: #ffffff;
-  --surface-soft: #f2efe9;
-  --accent: #496154;
-  --accent-strong: #2e3d34;
-  --border: rgba(60, 50, 40, 0.15);
-  --shadow: 0 16px 40px rgba(30, 25, 20, 0.12);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: light;
-    --background: #f7f4ef;
-    --foreground: #1a1a1a;
-  }
-}
-
 html {
-  background: var(--background);
+  background: #f7f4ef;
+  color-scheme: light;
 }
 
 body {
@@ -47,15 +18,21 @@ body {
       transparent 60%
     ),
     radial-gradient(1000px 700px at 100% 0%, #e8f1ec 0%, transparent 55%),
-    var(--background);
-  color: var(--foreground);
+    #f7f4ef;
+  color: #1a1a1a;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
 html,
 body {
-  background-color: var(--background) !important;
+  background-color: #f7f4ef !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light;
+  }
 }
 
 a {
@@ -67,6 +44,17 @@ main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+}
+
+:root {
+  --ink: #1c1c1c;
+  --ink-soft: #4e4a44;
+  --surface: #ffffff;
+  --surface-soft: #f2efe9;
+  --accent: #496154;
+  --accent-strong: #2e3d34;
+  --border: rgba(60, 50, 40, 0.15);
+  --shadow: 0 16px 40px rgba(30, 25, 20, 0.12);
 }
 
 h1,
