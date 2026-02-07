@@ -204,7 +204,7 @@ export default async function PlantTypePage({
                 instance.size_note,
                 instance.source_type,
                 instance.seller_name,
-              ].filter(Boolean);
+              ].filter((value): value is string => Boolean(value));
               const priceLabel =
                 instance.price && instance.currency
                   ? `${instance.price} ${instance.currency}`
