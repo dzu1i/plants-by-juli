@@ -2,6 +2,9 @@ import { supabase } from "@/lib/supabaseClient";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
+import AddInstanceModal from "@/components/AddInstanceModal";
+import ToastHost from "@/components/ToastHost";
+import InstanceCard from "@/components/InstanceCard";
 
 type PlantType = {
   id: string;
@@ -23,6 +26,8 @@ type PlantInstance = {
   seller_name: string | null;
   source_type: string | null;
   for_swap: boolean | null;
+  notes: string | null;
+  plant_number: number | null;
   created_at: string | null;
 };
 
@@ -33,6 +38,7 @@ type PlantPhoto = {
   caption: string | null;
   taken_at: string | null;
   created_at: string | null;
+  is_featured: boolean | null;
 };
 
 function displayNameFromType(p: PlantType) {
@@ -41,6 +47,13 @@ function displayNameFromType(p: PlantType) {
 
 function sortPhotoKey(photo: PlantPhoto) {
   return photo.taken_at ?? photo.created_at ?? "";
+}
+
+function sortPhotos(a: PlantPhoto, b: PlantPhoto) {
+  const aFeatured = a.is_featured ? 1 : 0;
+  const bFeatured = b.is_featured ? 1 : 0;
+  if (aFeatured !== bFeatured) return bFeatured - aFeatured;
+  return sortPhotoKey(b).localeCompare(sortPhotoKey(a));
 }
 
 export default async function PlantTypePage({
@@ -88,7 +101,7 @@ export default async function PlantTypePage({
   const { data: instancesData, error: instanceError } = await supabase
     .from("plant_instances")
     .select(
-      "id, type_id, acquired_at, price, currency, size_type, size_note, seller_name, source_type, for_swap, created_at"
+      "id, type_id, acquired_at, price, currency, size_type, size_note, seller_name, source_type, for_swap, notes, plant_number, created_at"
     )
     .eq("type_id", plantType.id)
     .order("created_at", { ascending: false });
@@ -99,7 +112,7 @@ export default async function PlantTypePage({
   const { data: photos, error: photoError } = instanceIds.length
     ? await supabase
         .from("plant_photos")
-        .select("id, instance_id, url, caption, taken_at, created_at")
+        .select("id, instance_id, url, caption, taken_at, created_at, is_featured")
         .in("instance_id", instanceIds)
         .order("taken_at", { ascending: false })
     : { data: [], error: null };
@@ -113,7 +126,7 @@ export default async function PlantTypePage({
   photoMap.forEach((list, key) => {
     photoMap.set(
       key,
-      [...list].sort((a, b) => sortPhotoKey(b).localeCompare(sortPhotoKey(a)))
+      [...list].sort(sortPhotos)
     );
   });
 
@@ -121,6 +134,7 @@ export default async function PlantTypePage({
 
   return (
     <main className={styles.page}>
+      <ToastHost />
       <div className={styles.backRow}>
         <Link href="/" className={styles.backLink}>
           ← Back to all plants
@@ -149,26 +163,16 @@ export default async function PlantTypePage({
                 Login
               </Link>
             )}
-            {isAdmin ? (
-              <button className={styles.addButton} type="button">
-                + Add Instance
-              </button>
-            ) : null}
+            <AddInstanceModal
+              isAdmin={isAdmin}
+              typeId={plantType.id}
+              typeSlug={plantType.slug}
+            />
           </div>
         </div>
 
-        <div className={styles.headerBody}>
-          <div
-            className={styles.headerImage}
-            style={{
-              backgroundImage: plantType.cover_image_url
-                ? `url(${plantType.cover_image_url})`
-                : undefined,
-            }}
-          />
-          <div className={styles.headerContent}>
-            <h1 className={styles.title}>{displayName}</h1>
-          </div>
+        <div className={styles.banner}>
+          <h1 className={styles.title}>{displayName}</h1>
         </div>
       </header>
 
@@ -189,7 +193,12 @@ export default async function PlantTypePage({
             {instances.map((instance) => {
               const instancePhotos = photoMap.get(instance.id) ?? [];
               const heroUrl = instancePhotos[0]?.url ?? null;
-              const label = `Plant ${instance.id.slice(0, 6)}`;
+              const numberLabel = instance.plant_number
+                ? `#${instance.plant_number}`
+                : `Plant ${instance.id.slice(0, 6)}`;
+              const label = isAdmin
+                ? numberLabel
+                : `${displayName} ${numberLabel}`;
               const metaParts = [
                 instance.size_type,
                 instance.size_note,
@@ -202,33 +211,21 @@ export default async function PlantTypePage({
                   : null;
 
               return (
-                <div key={instance.id} className={styles.instanceCard}>
-                  <div
-                    className={styles.instanceImage}
-                    style={{
-                      backgroundImage: heroUrl ? `url(${heroUrl})` : undefined,
-                    }}
-                  />
-                  <div className={styles.instanceBody}>
-                    <div className={styles.instanceTitle}>{label}</div>
-                    {metaParts.length ? (
-                      <div className={styles.instanceSlug}>
-                        {metaParts.join(" · ")}
-                      </div>
-                    ) : null}
-                    {instance.acquired_at ? (
-                      <div className={styles.instanceMeta}>
-                        Acquired {instance.acquired_at}
-                      </div>
-                    ) : null}
-                    {priceLabel ? (
-                      <div className={styles.instanceMeta}>{priceLabel}</div>
-                    ) : null}
-                    <div className={styles.instanceMeta}>
-                      {instancePhotos.length} photos
-                    </div>
-                  </div>
-                </div>
+                <InstanceCard
+                  key={instance.id}
+                  isAdmin={isAdmin}
+                  typeSlug={plantType.slug}
+                  displayName={displayName}
+                  instanceId={instance.id}
+                  label={label}
+                  heroUrl={heroUrl}
+                  photoCount={instancePhotos.length}
+                  photos={instancePhotos}
+                  metaParts={metaParts}
+                  acquiredAt={instance.acquired_at}
+                  priceLabel={priceLabel}
+                  notes={instance.notes}
+                />
               );
             })}
           </div>

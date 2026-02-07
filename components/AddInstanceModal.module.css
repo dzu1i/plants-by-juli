@@ -1,0 +1,139 @@
+.addButton {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 12px 20px rgba(30, 40, 35, 0.2);
+  font-size: 14px;
+}
+
+.addButton:hover {
+  background: var(--accent-strong);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 16, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 50;
+}
+
+.modal {
+  width: min(620px, 100%);
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: 0 20px 40px rgba(20, 18, 16, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 22px;
+  color: var(--accent-strong);
+}
+
+.closeButton {
+  border: none;
+  background: #f4f1eb;
+  color: var(--accent-strong);
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.input,
+.select,
+.textarea {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.inputFile {
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  font-size: 14px;
+  background: #faf8f4;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.saveButton {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 12px 20px rgba(30, 40, 35, 0.2);
+}
+
+.saveButton:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.message {
+  margin: 0;
+  font-size: 14px;
+  color: var(--accent-strong);
+}
+
+@media (max-width: 720px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

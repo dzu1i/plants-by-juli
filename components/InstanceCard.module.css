@@ -1,0 +1,179 @@
+.card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  padding: 12px;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: rgba(40, 60, 45, 0.2);
+}
+
+.cardImage {
+  height: 150px;
+  background-color: var(--surface-soft);
+  background-position: center;
+  background-size: cover;
+  border-radius: 16px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cardTitle {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.cardMeta {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 18, 16, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 60;
+}
+
+.modal {
+  width: min(920px, 100%);
+  background: #fff;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: 0 24px 50px rgba(20, 18, 16, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.modalTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent-strong);
+}
+
+.modalSubtitle {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.closeButton {
+  border: none;
+  background: #f4f1eb;
+  color: var(--accent-strong);
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.viewer {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.arrow {
+  border: none;
+  background: #f4f1eb;
+  color: var(--accent-strong);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.arrow:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.imageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f4ef;
+  border-radius: 18px;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.empty {
+  color: var(--ink-soft);
+  padding: 40px 0;
+}
+
+.captionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.caption {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.star,
+.starActive {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.star {
+  color: #bdb3a6;
+}
+
+.starActive {
+  color: #d1a70a;
+}
+
+@media (max-width: 720px) {
+  .viewer {
+    grid-template-columns: 1fr;
+  }
+
+  .arrow {
+    justify-self: center;
+  }
+}

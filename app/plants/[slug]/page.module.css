@@ -43,22 +43,6 @@
   cursor: pointer;
 }
 
-.addButton {
-  border: none;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 999px;
-  cursor: pointer;
-  box-shadow: 0 12px 20px rgba(30, 40, 35, 0.2);
-  font-size: 14px;
-}
-
-.addButton:hover {
-  background: var(--accent-strong);
-}
-
 .headerActions {
   display: inline-flex;
   align-items: center;
@@ -79,28 +63,13 @@
   background: #ece7df;
 }
 
-.headerBody {
-  display: grid;
-  grid-template-columns: minmax(220px, 320px) 1fr;
-  gap: 22px;
-  align-items: center;
-}
-
-.headerImage {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background-color: var(--surface-soft);
+.banner {
+  background: #dbe2d6;
   border-radius: 18px;
-  background-position: center;
-  background-size: cover;
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 20px rgba(40, 35, 30, 0.12);
-}
-
-.headerContent {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  padding: 24px 20px;
+  text-align: center;
+  border: 1px solid rgba(46, 61, 52, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .backLink {
@@ -113,7 +82,7 @@
 
 .title {
   margin: 0;
-  font-size: 30px;
+  font-size: 28px;
   color: var(--accent-strong);
 }
 
@@ -190,6 +159,11 @@
   gap: 6px;
 }
 
+.instanceActions {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .instanceTitle {
   font-weight: 700;
   font-size: 15px;
@@ -226,7 +200,7 @@
     width: 100%;
   }
 
-  .headerBody {
-    grid-template-columns: 1fr;
+  .banner {
+    padding: 20px 16px;
   }
 }
