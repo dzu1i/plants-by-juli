@@ -135,12 +135,6 @@ export default async function PlantTypePage({
   return (
     <main className={styles.page}>
       <ToastHost />
-      <div className={styles.backRow}>
-        <Link href="/" className={styles.backLink}>
-          ← Back to all plants
-        </Link>
-      </div>
-
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <Link href="/" className={styles.logo}>
@@ -175,6 +169,11 @@ export default async function PlantTypePage({
           <h1 className={styles.title}>{displayName}</h1>
         </div>
       </header>
+      <div className={styles.backRow}>
+        <Link href="/" className={styles.backLink}>
+          ← Back to all plants
+        </Link>
+      </div>
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
