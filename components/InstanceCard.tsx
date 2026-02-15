@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import AddPhotosModal from "@/components/AddPhotosModal";
@@ -69,6 +69,28 @@ export default function InstanceCard({
     );
   }
 
+  useEffect(() => {
+    if (!open || items.length < 2) return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        prev();
+      }
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        next();
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, items.length]);
+
   async function setFeatured(photoId: string) {
     if (!isAdmin) return;
     await supabase
@@ -96,6 +118,7 @@ export default function InstanceCard({
       });
     });
     setActiveIndex(0);
+    window.location.reload();
   }
 
   return (
@@ -153,14 +176,15 @@ export default function InstanceCard({
                 </div>
 
                 <div className={styles.viewer}>
-                  <button
-                    className={styles.arrow}
-                    type="button"
-                    onClick={prev}
-                    disabled={!hasPhotos}
-                  >
-                    ←
-                  </button>
+                  {items.length > 1 ? (
+                    <button
+                      className={styles.arrow}
+                      type="button"
+                      onClick={prev}
+                    >
+                      ←
+                    </button>
+                  ) : null}
                   <div className={styles.imageWrap}>
                     {current ? (
                       <img
@@ -172,14 +196,15 @@ export default function InstanceCard({
                       <div className={styles.empty}>No photos yet</div>
                     )}
                   </div>
-                  <button
-                    className={styles.arrow}
-                    type="button"
-                    onClick={next}
-                    disabled={!hasPhotos}
-                  >
-                    →
-                  </button>
+                  {items.length > 1 ? (
+                    <button
+                      className={styles.arrow}
+                      type="button"
+                      onClick={next}
+                    >
+                      →
+                    </button>
+                  ) : null}
                 </div>
 
                 {current ? (
@@ -187,6 +212,11 @@ export default function InstanceCard({
                     <div className={styles.caption}>
                       {current.caption ?? " "}
                     </div>
+                    {items.length > 1 ? (
+                      <div className={styles.counter}>
+                        {activeIndex + 1} / {items.length}
+                      </div>
+                    ) : null}
                     {isAdmin ? (
                       <button
                         className={

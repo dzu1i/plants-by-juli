@@ -62,6 +62,20 @@
   color: var(--accent-strong);
 }
 
+.loadMoreRow {
+  display: flex;
+  justify-content: center;
+}
+
+.loadMore {
+  border: 1px solid var(--border);
+  background: #f4f1eb;
+  color: var(--accent-strong);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
 @media (max-width: 720px) {
   .header {
     flex-direction: column;

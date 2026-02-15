@@ -152,6 +152,11 @@
   color: var(--ink-soft);
 }
 
+.counter {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
 .star,
 .starActive {
   border: none;

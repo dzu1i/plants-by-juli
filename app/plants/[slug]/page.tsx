@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import styles from "./page.module.css";
 import Link from "next/link";
+import Image from "next/image";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import AddInstanceModal from "@/components/AddInstanceModal";
 import ToastHost from "@/components/ToastHost";
@@ -58,8 +59,10 @@ function sortPhotos(a: PlantPhoto, b: PlantPhoto) {
 
 export default async function PlantTypePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
   const supabaseServer = await createSupabaseServerClient();
   const {
@@ -71,6 +74,11 @@ export default async function PlantTypePage({
   const isLoggedIn = !!user;
 
   const { slug } = await params;
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam ?? "1") || 1);
+  const perPage = 12;
+  const from = (page - 1) * perPage;
+  const to = from + perPage - 1;
   const { data: plantType, error } = await supabase
     .from("plant_types")
     .select("id, genus, cultivar, variegation, slug, cover_image_url")
@@ -98,13 +106,15 @@ export default async function PlantTypePage({
     );
   }
 
-  const { data: instancesData, error: instanceError } = await supabase
+  const { data: instancesData, error: instanceError, count } = await supabase
     .from("plant_instances")
     .select(
-      "id, type_id, acquired_at, price, currency, size_type, size_note, seller_name, source_type, for_swap, notes, plant_number, created_at"
+      "id, type_id, acquired_at, price, currency, size_type, size_note, seller_name, source_type, for_swap, notes, plant_number, created_at",
+      { count: "exact" }
     )
     .eq("type_id", plantType.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   const instances = (instancesData ?? []) as PlantInstance[];
   const instanceIds = instances.map((instance) => instance.id);
@@ -138,10 +148,13 @@ export default async function PlantTypePage({
       <header className={styles.header}>
         <div className={styles.headerTop}>
           <Link href="/" className={styles.logo}>
-            <img
+            <Image
               className={styles.logoImage}
               src="/logo.png"
               alt="PlantsByJuli"
+              width={220}
+              height={70}
+              priority
             />
           </Link>
           <div className={styles.headerActions}>
@@ -165,20 +178,23 @@ export default async function PlantTypePage({
           </div>
         </div>
 
+        <div className={styles.backRow}>
+          <Link href="/" className={styles.backLink}>
+            ← Back to all plants
+          </Link>
+        </div>
+
         <div className={styles.banner}>
           <h1 className={styles.title}>{displayName}</h1>
         </div>
       </header>
-      <div className={styles.backRow}>
-        <Link href="/" className={styles.backLink}>
-          ← Back to all plants
-        </Link>
-      </div>
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>My Plants</h2>
-          <div className={styles.sectionMeta}>{instances.length} instances</div>
+          <div className={styles.sectionMeta}>
+            {count ?? instances.length} instances
+          </div>
         </div>
 
         {instanceError ? (
@@ -232,6 +248,17 @@ export default async function PlantTypePage({
 
         {photoError ? (
           <pre className={styles.error}>{photoError.message}</pre>
+        ) : null}
+
+        {count && from + instances.length < count ? (
+          <div className={styles.loadMoreRow}>
+            <Link
+              className={styles.loadMore}
+              href={`/plants/${plantType.slug}?page=${page + 1}`}
+            >
+              Load more
+            </Link>
+          </div>
         ) : null}
       </section>
     </main>

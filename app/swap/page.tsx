@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./page.module.css";
 import { supabase } from "@/lib/supabaseClient";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
@@ -114,10 +115,13 @@ export default async function SwapPage() {
     <main className={styles.page}>
       <header className={styles.header}>
         <Link href="/" className={styles.logo}>
-          <img
+          <Image
             className={styles.logoImage}
             src="/logo.png"
             alt="PlantsByJuli"
+            width={220}
+            height={70}
+            priority
           />
         </Link>
         <div className={styles.headerActions}>
