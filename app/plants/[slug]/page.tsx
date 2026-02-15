@@ -190,13 +190,6 @@ export default async function PlantTypePage({
       </header>
 
       <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>My Plants</h2>
-          <div className={styles.sectionMeta}>
-            {count ?? instances.length} instances
-          </div>
-        </div>
-
         {instanceError ? (
           <pre className={styles.error}>{instanceError.message}</pre>
         ) : instances.length === 0 ? (

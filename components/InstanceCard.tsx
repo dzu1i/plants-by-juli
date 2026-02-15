@@ -70,16 +70,20 @@ export default function InstanceCard({
   }
 
   useEffect(() => {
-    if (!open || items.length < 2) return;
+    if (!open) return;
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        prev();
+        if (items.length > 1) {
+          event.preventDefault();
+          prev();
+        }
       }
       if (event.key === "ArrowRight") {
-        event.preventDefault();
-        next();
+        if (items.length > 1) {
+          event.preventDefault();
+          next();
+        }
       }
       if (event.key === "Escape") {
         event.preventDefault();
