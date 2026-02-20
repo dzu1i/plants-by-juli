@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import AddPhotosModal from "@/components/AddPhotosModal";
 import styles from "./InstanceCard.module.css";
+import Image from "next/image";
 
 type Photo = {
   id: string;
@@ -49,7 +50,6 @@ export default function InstanceCard({
   const [activeIndex, setActiveIndex] = useState(0);
   const [items, setItems] = useState(photos);
 
-  const hasPhotos = items.length > 0;
   const current = items[activeIndex] ?? null;
 
   function openModal() {
@@ -57,17 +57,17 @@ export default function InstanceCard({
     setOpen(true);
   }
 
-  function prev() {
+  const prev = useCallback(() => {
     setActiveIndex((prevIndex) =>
       prevIndex === 0 ? items.length - 1 : prevIndex - 1
     );
-  }
+  }, [items.length]);
 
-  function next() {
+  const next = useCallback(() => {
     setActiveIndex((prevIndex) =>
       prevIndex === items.length - 1 ? 0 : prevIndex + 1
     );
-  }
+  }, [items.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -93,7 +93,7 @@ export default function InstanceCard({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, items.length]);
+  }, [open, items.length, next, prev]);
 
   async function setFeatured(photoId: string) {
     if (!isAdmin) return;
@@ -123,6 +123,42 @@ export default function InstanceCard({
     });
     setActiveIndex(0);
     window.location.reload();
+  }
+
+  function formatPhotoDate(photo: Photo) {
+    const raw = photo.taken_at || photo.created_at;
+    if (!raw) return "";
+    try {
+      return new Date(raw).toLocaleDateString("cs-CZ");
+    } catch {
+      return raw;
+    }
+  }
+
+  function getStoragePathFromUrl(url: string, bucket: string) {
+    const marker = `/storage/v1/object/public/${bucket}/`;
+    const index = url.indexOf(marker);
+    if (index === -1) return null;
+    return url.slice(index + marker.length);
+  }
+
+  async function deletePhoto(photoId: string, url: string) {
+    if (!isAdmin) return;
+    const ok = window.confirm("Delete this photo?");
+    if (!ok) return;
+
+    const bucket =
+      process.env.NEXT_PUBLIC_SUPABASE_INSTANCE_BUCKET || "plant-instances";
+    const path = getStoragePathFromUrl(url, bucket);
+
+    if (path) {
+      await supabase.storage.from(bucket).remove([path]);
+    }
+
+    await supabase.from("plant_photos").delete().eq("id", photoId);
+
+    setItems((prev) => prev.filter((photo) => photo.id !== photoId));
+    setActiveIndex((prev) => Math.max(0, Math.min(prev, items.length - 2)));
   }
 
   return (
@@ -191,11 +227,27 @@ export default function InstanceCard({
                   ) : null}
                   <div className={styles.imageWrap}>
                     {current ? (
-                      <img
-                        src={current.url}
-                        alt={current.caption ?? displayName}
-                        className={styles.image}
-                      />
+                      <>
+                        <Image
+                          src={current.url}
+                          alt={current.caption ?? displayName}
+                          fill
+                          sizes="(max-width: 720px) 90vw, 800px"
+                          className={styles.image}
+                        />
+                        <div className={styles.dateOverlay}>
+                          {formatPhotoDate(current)}
+                        </div>
+                        {isAdmin ? (
+                          <button
+                            className={styles.deleteOverlay}
+                            type="button"
+                            onClick={() => deletePhoto(current.id, current.url)}
+                          >
+                            Delete
+                          </button>
+                        ) : null}
+                      </>
                     ) : (
                       <div className={styles.empty}>No photos yet</div>
                     )}
@@ -222,17 +274,19 @@ export default function InstanceCard({
                       </div>
                     ) : null}
                     {isAdmin ? (
-                      <button
-                        className={
-                          current.is_featured
-                            ? styles.starActive
-                            : styles.star
-                        }
-                        type="button"
-                        onClick={() => setFeatured(current.id)}
-                      >
-                        ★
-                      </button>
+                      <div className={styles.adminActions}>
+                        <button
+                          className={
+                            current.is_featured
+                              ? styles.starActive
+                              : styles.star
+                          }
+                          type="button"
+                          onClick={() => setFeatured(current.id)}
+                        >
+                          ★
+                        </button>
+                      </div>
                     ) : null}
                   </div>
                 ) : null}

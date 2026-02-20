@@ -59,6 +59,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
 }
 
 .card:hover {
@@ -98,6 +99,11 @@
   flex-direction: column;
   gap: 6px;
   text-align: center;
+}
+
+.cardLink {
+  display: block;
+  color: inherit;
 }
 
 .cardTitle {

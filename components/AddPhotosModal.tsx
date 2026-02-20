@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useEffect } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import styles from "./AddPhotosModal.module.css";
@@ -17,11 +17,6 @@ export default function AddPhotosModal({ isAdmin, instanceId, typeSlug }: Props)
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!isAdmin) return null;
 
@@ -93,7 +88,7 @@ export default function AddPhotosModal({ isAdmin, instanceId, typeSlug }: Props)
         + Add Photos
       </button>
 
-      {open && mounted
+      {open && typeof document !== "undefined"
         ? createPortal(
             <div
               className={styles.backdrop}

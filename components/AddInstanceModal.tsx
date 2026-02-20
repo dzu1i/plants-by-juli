@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useEffect } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { createSupabaseBrowserClient } from "@/lib/supabaseBrowser";
 import styles from "./AddInstanceModal.module.css";
@@ -45,11 +45,6 @@ export default function AddInstanceModal({ isAdmin, typeId, typeSlug }: Props) {
   const [notes, setNotes] = useState("");
   const [forSwap, setForSwap] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!isAdmin) return null;
 
@@ -136,7 +131,7 @@ export default function AddInstanceModal({ isAdmin, typeId, typeSlug }: Props) {
         + Add Instance
       </button>
 
-      {open && mounted
+      {open && typeof document !== "undefined"
         ? createPortal(
             <div className={styles.backdrop} onClick={() => setOpen(false)}>
               <div className={styles.modal} onClick={(e) => e.stopPropagation()}>

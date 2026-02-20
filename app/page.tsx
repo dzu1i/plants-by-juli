@@ -76,7 +76,7 @@ export default async function Home({
         </div>
       </header>
 
-      <PlantGrid plants={(data ?? []) as PlantType[]} />
+      <PlantGrid plants={(data ?? []) as PlantType[]} isAdmin={isAdmin} />
       {count && from + (data?.length ?? 0) < count ? (
         <div className={styles.loadMoreRow}>
           <Link href={`/?page=${page + 1}`} className={styles.loadMore}>

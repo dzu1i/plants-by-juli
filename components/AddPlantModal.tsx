@@ -66,9 +66,9 @@ export default function AddPlantModal({ isAdmin }: Props) {
     }
 
     const { error: insertError } = await supabase.from("plant_types").insert({
-      genus,
-      cultivar,
-      variegation: variegation || null,
+      genus: genus.trim(),
+      cultivar: cultivar.trim(),
+      variegation: variegation.trim() || null,
       slug,
       cover_image_url: coverImageUrl,
     });
@@ -170,13 +170,12 @@ export default function AddPlantModal({ isAdmin }: Props) {
               </label>
 
               <label className={styles.label}>
-                Cover image
+                Cover image (optional)
                 <input
                   className={styles.inputFile}
                   type="file"
                   accept="image/*"
                   onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
-                  required
                 />
               </label>
 

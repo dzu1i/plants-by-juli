@@ -19,7 +19,7 @@
 }
 
 .cardImage {
-  height: 150px;
+  height: 200px;
   background-color: var(--surface-soft);
   background-position: center;
   background-size: cover;
@@ -127,11 +127,10 @@
   border-radius: 18px;
   min-height: 320px;
   overflow: hidden;
+  position: relative;
 }
 
 .image {
-  max-width: 100%;
-  max-height: 70vh;
   object-fit: contain;
 }
 
@@ -155,6 +154,36 @@
 .counter {
   font-size: 12px;
   color: var(--ink-soft);
+}
+
+.adminActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateOverlay {
+  position: absolute;
+  left: 14px;
+  bottom: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--accent-strong);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.deleteOverlay {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: rgba(255, 236, 240, 0.9);
+  color: #b13c64;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .star,
