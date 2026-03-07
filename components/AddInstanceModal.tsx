@@ -44,7 +44,7 @@ export default function AddInstanceModal({ isAdmin, typeId, typeSlug }: Props) {
   const [sourceType, setSourceType] = useState("shop");
   const [notes, setNotes] = useState("");
   const [forSwap, setForSwap] = useState(false);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   if (!isAdmin) return null;
 
@@ -76,35 +76,40 @@ export default function AddInstanceModal({ isAdmin, typeId, typeSlug }: Props) {
       return;
     }
 
-    if (imageFile) {
+    if (imageFiles.length > 0) {
       const bucket =
         process.env.NEXT_PUBLIC_SUPABASE_INSTANCE_BUCKET || "plant-instances";
-      const fileExt = imageFile.name.split(".").pop() || "jpg";
-      const filePath = `${typeSlug}/${instance.id}/cover.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, imageFile, { upsert: true });
-
-      if (uploadError) {
-        setBusy(false);
-        setMessage(uploadError.message);
-        return;
-      }
-
-      const { data: publicUrl } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath);
-
-      const { error: photoError } = await supabase.from("plant_photos").insert({
-        instance_id: instance.id,
-        url: publicUrl.publicUrl,
+      const uploads = imageFiles.map((file, index) => {
+        const fileExt = file.name.split(".").pop() || "jpg";
+        const filePath = `${typeSlug}/${instance.id}/${Date.now()}-${index}.${fileExt}`;
+        return { file, filePath };
       });
 
-      if (photoError) {
-        setBusy(false);
-        setMessage(photoError.message);
-        return;
+      for (const upload of uploads) {
+        const { error: uploadError } = await supabase.storage
+          .from(bucket)
+          .upload(upload.filePath, upload.file, { upsert: true });
+
+        if (uploadError) {
+          setBusy(false);
+          setMessage(uploadError.message);
+          return;
+        }
+
+        const { data: publicUrl } = supabase.storage
+          .from(bucket)
+          .getPublicUrl(upload.filePath);
+
+        const { error: photoError } = await supabase.from("plant_photos").insert({
+          instance_id: instance.id,
+          url: publicUrl.publicUrl,
+        });
+
+        if (photoError) {
+          setBusy(false);
+          setMessage(photoError.message);
+          return;
+        }
       }
     }
 
@@ -253,12 +258,15 @@ export default function AddInstanceModal({ isAdmin, typeId, typeSlug }: Props) {
                   </label>
 
                   <label className={styles.label}>
-                    Cover image
+                    Photos
                     <input
                       className={styles.inputFile}
                       type="file"
                       accept="image/*"
-                      onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+                      multiple
+                      onChange={(e) =>
+                        setImageFiles(Array.from(e.target.files ?? []))
+                      }
                     />
                   </label>
 

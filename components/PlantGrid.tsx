@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import styles from "./PlantGrid.module.css";
 import CoverPicker from "@/components/CoverPicker";
+import Image from "next/image";
 
 export type PlantType = {
   id: string;
@@ -24,26 +25,29 @@ function displayName(p: PlantType) {
 export default function PlantGrid({
   plants,
   isAdmin,
+  totalCount,
 }: {
   plants: PlantType[];
   isAdmin: boolean;
+  totalCount: number | null;
 }) {
   const [query, setQuery] = useState("");
   const [genus, setGenus] = useState("all");
+  const effectivePlants = plants;
 
   const genera = useMemo(() => {
     const set = new Set(
-      plants
+      effectivePlants
         .map((p) => p.genus?.trim())
         .filter((value): value is string => Boolean(value))
     );
     return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-  }, [plants]);
+  }, [effectivePlants]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    return plants.filter((p) => {
+    return effectivePlants.filter((p) => {
       const plantGenus = p.genus?.trim();
       const matchesGenus = genus === "all" || plantGenus === genus;
 
@@ -54,7 +58,7 @@ export default function PlantGrid({
       } ${p.slug}`.toLowerCase();
       return matchesGenus && hay.includes(q);
     });
-  }, [plants, query, genus]);
+  }, [effectivePlants, query, genus]);
 
   return (
     <section>
@@ -77,6 +81,11 @@ export default function PlantGrid({
             </option>
           ))}
         </select>
+        {query.trim() ? (
+          <div className={styles.pageMeta}>{filtered.length} results</div>
+        ) : totalCount ? (
+          <div className={styles.pageMeta}>{totalCount} total</div>
+        ) : null}
 
       </div>
 
@@ -93,12 +102,15 @@ export default function PlantGrid({
                 plantSlug={p.slug}
               />
               <Link href={`/plants/${p.slug}`} className={styles.cardLink}>
-                <div
-                  className={styles.cardImage}
-                  style={{
-                    backgroundImage: `url(${cover})`,
-                  }}
-                />
+                <div className={styles.cardImage}>
+                  <Image
+                    src={cover}
+                    alt={displayName(p)}
+                    fill
+                    sizes="(max-width: 600px) 90vw, (max-width: 1200px) 33vw, 260px"
+                    className={styles.cardImg}
+                  />
+                </div>
                 <div className={styles.cardContent}>
                   <div className={styles.cardTitle}>{displayName(p)}</div>
                 </div>

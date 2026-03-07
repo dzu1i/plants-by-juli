@@ -7,11 +7,7 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import AddPlantModal from "@/components/AddPlantModal";
 import ToastHost from "@/components/ToastHost";
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}) {
+export default async function Home() {
   const supabaseServer = await createSupabaseServerClient();
   const {
     data: { user },
@@ -21,25 +17,18 @@ export default async function Home({
     !!adminEmail && user?.email?.toLowerCase() === adminEmail;
   const isLoggedIn = !!user;
 
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam ?? "1") || 1);
-  const perPage = 24;
-  const from = (page - 1) * perPage;
-  const to = from + perPage - 1;
-
   const { data, error, count } = await supabase
     .from("plant_types")
     .select("id, genus, cultivar, variegation, slug, cover_image_url", {
       count: "exact",
     })
     .order("genus")
-    .order("cultivar")
-    .range(from, to);
+    .order("cultivar");
 
   if (error) {
     return (
       <main>
-        <h1 className={styles.title}>PlantsByJulie</h1>
+        <h1>PlantsByJulie</h1>
         <pre>{error.message}</pre>
       </main>
     );
@@ -76,14 +65,11 @@ export default async function Home({
         </div>
       </header>
 
-      <PlantGrid plants={(data ?? []) as PlantType[]} isAdmin={isAdmin} />
-      {count && from + (data?.length ?? 0) < count ? (
-        <div className={styles.loadMoreRow}>
-          <Link href={`/?page=${page + 1}`} className={styles.loadMore}>
-            Load more
-          </Link>
-        </div>
-      ) : null}
+      <PlantGrid
+        plants={(data ?? []) as PlantType[]}
+        isAdmin={isAdmin}
+        totalCount={count ?? null}
+      />
     </main>
   );
 }

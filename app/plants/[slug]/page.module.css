@@ -97,23 +97,6 @@
   box-shadow: 0 10px 30px rgba(30, 25, 20, 0.08);
 }
 
-.sectionHeader {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.sectionTitle {
-  margin: 0;
-  font-size: 20px;
-}
-
-.sectionMeta {
-  font-size: 14px;
-  color: var(--ink-soft);
-}
-
 .error {
   padding: 12px;
   background: #fff5f1;
@@ -132,53 +115,6 @@
   gap: 20px;
 }
 
-.instanceCard {
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  overflow: hidden;
-  background: var(--surface);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease,
-    border-color 0.2s ease;
-  padding: 12px;
-  gap: 10px;
-}
-
-.instanceImage {
-  height: 150px;
-  background-color: var(--surface-soft);
-  background-position: center;
-  background-size: cover;
-  border-radius: 16px;
-}
-
-.instanceBody {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.instanceActions {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.instanceTitle {
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.instanceSlug {
-  font-size: 12px;
-  color: var(--ink-soft);
-}
-
-.instanceMeta {
-  font-size: 12px;
-  color: var(--ink-soft);
-}
-
 .loadMoreRow {
   display: flex;
   justify-content: center;
@@ -193,11 +129,6 @@
   font-weight: 600;
 }
 
-.instanceCard:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
-  border-color: rgba(40, 60, 45, 0.2);
-}
 
 @media (max-width: 720px) {
   .headerTop {

@@ -49,11 +49,13 @@ export default function InstanceCard({
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [items, setItems] = useState(photos);
+  const [loading, setLoading] = useState(false);
 
   const current = items[activeIndex] ?? null;
 
   function openModal() {
     setActiveIndex(0);
+    setLoading(true);
     setOpen(true);
   }
 
@@ -61,12 +63,14 @@ export default function InstanceCard({
     setActiveIndex((prevIndex) =>
       prevIndex === 0 ? items.length - 1 : prevIndex - 1
     );
+    setLoading(true);
   }, [items.length]);
 
   const next = useCallback(() => {
     setActiveIndex((prevIndex) =>
       prevIndex === items.length - 1 ? 0 : prevIndex + 1
     );
+    setLoading(true);
   }, [items.length]);
 
   useEffect(() => {
@@ -229,12 +233,19 @@ export default function InstanceCard({
                     {current ? (
                       <>
                         <Image
-                          src={current.url}
+                          src={current.url || "/placeholder-plant.svg"}
                           alt={current.caption ?? displayName}
-                          fill
-                          sizes="(max-width: 720px) 90vw, 800px"
+                          width={1200}
+                          height={800}
+                          sizes="(max-width: 720px) 90vw, 900px"
                           className={styles.image}
+                          onLoad={() => setLoading(false)}
                         />
+                        {loading ? (
+                          <div className={styles.loadingOverlay}>
+                            <div className={styles.spinner} />
+                          </div>
+                        ) : null}
                         <div className={styles.dateOverlay}>
                           {formatPhotoDate(current)}
                         </div>
