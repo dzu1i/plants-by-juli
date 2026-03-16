@@ -9,21 +9,23 @@ import ToastHost from "@/components/ToastHost";
 
 export default async function Home() {
   const supabaseServer = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabaseServer.auth.getUser();
+  const userPromise = supabaseServer.auth.getUser();
+  const plantsPromise = supabase
+    .from("plant_types")
+    .select("id, genus, cultivar, variegation, slug, cover_image_url")
+    .order("genus")
+    .order("cultivar");
+
+  const [
+    {
+      data: { user },
+    },
+    { data, error },
+  ] = await Promise.all([userPromise, plantsPromise]);
   const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
   const isAdmin =
     !!adminEmail && user?.email?.toLowerCase() === adminEmail;
   const isLoggedIn = !!user;
-
-  const { data, error, count } = await supabase
-    .from("plant_types")
-    .select("id, genus, cultivar, variegation, slug, cover_image_url", {
-      count: "exact",
-    })
-    .order("genus")
-    .order("cultivar");
 
   if (error) {
     return (
@@ -68,7 +70,7 @@ export default async function Home() {
       <PlantGrid
         plants={(data ?? []) as PlantType[]}
         isAdmin={isAdmin}
-        totalCount={count ?? null}
+        totalCount={(data ?? []).length}
       />
     </main>
   );

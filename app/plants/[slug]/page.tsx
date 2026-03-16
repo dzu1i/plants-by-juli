@@ -65,25 +65,28 @@ export default async function PlantTypePage({
   searchParams: Promise<{ page?: string }>;
 }) {
   const supabaseServer = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabaseServer.auth.getUser();
+  const userPromise = supabaseServer.auth.getUser();
+  const [{ slug }, { page: pageParam }] = await Promise.all([
+    params,
+    searchParams,
+  ]);
   const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
-  const isAdmin =
-    !!adminEmail && user?.email?.toLowerCase() === adminEmail;
-  const isLoggedIn = !!user;
-
-  const { slug } = await params;
-  const { page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? "1") || 1);
   const perPage = 12;
   const from = (page - 1) * perPage;
-  const to = from + perPage - 1;
+  const rangeEnd = from + perPage;
   const { data: plantType, error } = await supabase
     .from("plant_types")
     .select("id, genus, cultivar, variegation, slug, cover_image_url")
     .eq("slug", slug)
     .maybeSingle();
+
+  const {
+    data: { user },
+  } = await userPromise;
+  const isAdmin =
+    !!adminEmail && user?.email?.toLowerCase() === adminEmail;
+  const isLoggedIn = !!user;
 
   if (error) {
     return (
@@ -106,17 +109,18 @@ export default async function PlantTypePage({
     );
   }
 
-  const { data: instancesData, error: instanceError, count } = await supabase
+  const { data: instancesData, error: instanceError } = await supabase
     .from("plant_instances")
     .select(
-      "id, type_id, acquired_at, price, currency, size_type, size_note, seller_name, source_type, for_swap, notes, plant_number, created_at",
-      { count: "exact" }
+      "id, type_id, acquired_at, price, currency, size_type, size_note, seller_name, source_type, for_swap, notes, plant_number, created_at"
     )
     .eq("type_id", plantType.id)
     .order("created_at", { ascending: false })
-    .range(from, to);
+    .range(from, rangeEnd);
 
-  const instances = (instancesData ?? []) as PlantInstance[];
+  const allInstances = (instancesData ?? []) as PlantInstance[];
+  const hasMore = allInstances.length > perPage;
+  const instances = hasMore ? allInstances.slice(0, perPage) : allInstances;
   const instanceIds = instances.map((instance) => instance.id);
 
   const { data: photos, error: photoError } = instanceIds.length
@@ -243,7 +247,7 @@ export default async function PlantTypePage({
           <pre className={styles.error}>{photoError.message}</pre>
         ) : null}
 
-        {count && from + instances.length < count ? (
+        {hasMore ? (
           <div className={styles.loadMoreRow}>
             <Link
               className={styles.loadMore}

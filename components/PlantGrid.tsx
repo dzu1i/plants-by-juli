@@ -83,7 +83,7 @@ export default function PlantGrid({
         </select>
         {query.trim() ? (
           <div className={styles.pageMeta}>{filtered.length} results</div>
-        ) : totalCount ? (
+        ) : totalCount !== null ? (
           <div className={styles.pageMeta}>{totalCount} total</div>
         ) : null}
 

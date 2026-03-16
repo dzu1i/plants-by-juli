@@ -168,12 +168,15 @@ export default function InstanceCard({
   return (
     <>
       <div className={styles.card} onClick={openModal} role="button">
-        <div
-          className={styles.cardImage}
-          style={{
-            backgroundImage: heroUrl ? `url(${heroUrl})` : undefined,
-          }}
-        />
+        <div className={styles.cardImage}>
+          <Image
+            src={heroUrl || "/placeholder-plant.svg"}
+            alt={label}
+            fill
+            sizes="(max-width: 720px) 90vw, (max-width: 1200px) 33vw, 320px"
+            className={styles.cardImg}
+          />
+        </div>
         <div className={styles.cardBody}>
           <div className={styles.cardTitle}>{label}</div>
           {isAdmin ? (
